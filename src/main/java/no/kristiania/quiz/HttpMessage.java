@@ -24,7 +24,7 @@ public class HttpMessage {
         InputStream in = socket.getInputStream();
 
         int c;
-        while ((c = in.read()) != -1 && c != '\r') {
+        while ((c = in.read()) != '\r') {
             result.append((char) c);
         }
         return result.toString();
@@ -44,6 +44,10 @@ public class HttpMessage {
             String[] headerField = responseHeader.split(":");
             header.put(headerField[0].trim(), headerField[1].trim());
         }
+    }
+
+    public String getStartLine() {
+        return startLine;
     }
 
     public String getHeader(String headerName) {

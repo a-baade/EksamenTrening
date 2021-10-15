@@ -3,6 +3,8 @@ package no.kristiania.quiz;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+
 
 public class HttpServer {
 
@@ -22,10 +24,10 @@ public class HttpServer {
             System.out.println(headerLine);
         }
 
-        String httpMessage = "Hello World";
+        String httpMessage = "Hello World || Hållo Wørld";
 
         String httpResponse = "HTTP/1.1 200 OK\r\n" +
-                "Content-Length: " + httpMessage.length() + "\r\n" +
+                "Content-Length: " + httpMessage.getBytes().length + "\r\n" +
                 "Connection: close\r\n" +
                 "\r\n" +
                 httpMessage;
