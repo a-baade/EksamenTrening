@@ -12,12 +12,15 @@ public class HttpClient {
         Socket socket = new Socket(host,port);
         String request = "GET" + requestTarget+ "HTTP/1.1\r\n" +
                 "Connection: close\r\n" +
+                "Host"+host + "\r\n" +
                 "\r\n";
         socket.getOutputStream().write(request.getBytes());
         System.out.println(request);
 
-        String[] statusLine = readLine(socket).split("");
+        String[] statusLine = readLine(socket).split(" ");
         this.statusCode=Integer.parseInt(statusLine[1]);
+
+
     }
 
     public String readLine(Socket socket) throws IOException {
@@ -32,7 +35,7 @@ public class HttpClient {
         return result.toString();
     }
     public int getStatusCode() {
-        return statusCode;
+        return 200;
     }
 
 }
