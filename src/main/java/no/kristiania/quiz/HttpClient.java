@@ -41,7 +41,7 @@ public class HttpClient {
         String responseHeader;
         while (!((responseHeader = readLine(socket)).isBlank())) {
             String[] headerField = responseHeader.split(":");
-            header.put(headerField[0].trim(), headerField[1].trim()); //arr[0] is key, arr[1] value
+            header.put(headerField[0].trim(), headerField[1].trim());
         }
     }
 
@@ -54,7 +54,12 @@ public class HttpClient {
         return header.get(headerName);
     }
 
+    public int getContentLength() {
+        return 0;
+    }
+
     public String getMessageBody() {
         return null;
     }
+
 }
