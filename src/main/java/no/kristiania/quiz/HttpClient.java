@@ -23,6 +23,7 @@ public class HttpClient {
 
         String[] statusLine = readLine(socket).split(" ");
         this.statusCode = Integer.parseInt(statusLine[1]);
+        readHeaders(socket);
     }
 
     private String readLine(Socket socket) throws IOException {
@@ -34,8 +35,16 @@ public class HttpClient {
             result.append((char) c);
         }
     return result.toString();
-
     }
+
+    private void readHeaders(Socket socket) throws IOException {
+        String responseHeader;
+        while (!((responseHeader = readLine(socket)).isBlank())) {
+            String[] headerField = responseHeader.split(":");
+            header.put(headerField[0].trim(), headerField[1].trim()); //arr[0] is key, arr[1] value
+        }
+    }
+
     public int getStatusCode() {
         return statusCode;
     }
