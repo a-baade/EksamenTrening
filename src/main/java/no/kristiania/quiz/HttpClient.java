@@ -1,77 +1,38 @@
 package no.kristiania.quiz;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class HttpClient {
 
     private final int statusCode;
-    private final Map<String, String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private String messageBody;
+    private final HttpMessage httpMessage;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
         Socket socket = new Socket(host, port);
 
-        socket.getOutputStream().write(
-                ("GET " + requestTarget + " HTTP/1.1\r\n" +
-                        "Connection: close \r\n" +
-                        "Host:" + host + "\r\n" +
-                        "\r\n").getBytes()
-        );
+        String request = "GET " + requestTarget + " HTTP/1.1\r\n" +
+                "Connection: close \r\n" +
+                "Host:" + host + "\r\n" +
+                "\r\n";
+        socket.getOutputStream().write(request.getBytes());
 
-        String[] statusLine = readLine(socket).split(" ");
+        httpMessage = new HttpMessage(socket);
+
+        String[] statusLine = httpMessage.startLine.split(" ");
         this.statusCode = Integer.parseInt(statusLine[1]);
-        readHeaders(socket);
-
-        this.messageBody =readBytes(socket,getContentLength());
-        System.out.println(messageBody);
-    }
-
-    private String readBytes(Socket socket, int contentLength) throws IOException {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < contentLength; i++) {
-            result.append((char)socket.getInputStream().read());
-        }
-        return result.toString();
-    }
-
-    private String readLine(Socket socket) throws IOException {
-        StringBuilder result = new StringBuilder();
-        InputStream in = socket.getInputStream();
-
-        int c;
-        while ((c = in.read()) != -1 && c != '\r') {
-            result.append((char) c);
-        }
-        return result.toString();
-    }
-
-    private void readHeaders(Socket socket) throws IOException {
-        String responseHeader;
-        while (!((responseHeader = readLine(socket)).isBlank())) {
-            String[] headerField = responseHeader.split(":");
-            header.put(headerField[0].trim(), headerField[1].trim());
-        }
     }
 
     public int getStatusCode() {
         return statusCode;
     }
 
-    public String getHeader(String headerName) {
-
-        return header.get(headerName);
-    }
-
-    public int getContentLength() {
-        return Integer.parseInt(getHeader("Content-Length"));
+    public String getHeader(String nameOfHeader) {
+        return httpMessage.getHeader((nameOfHeader));
     }
 
     public String getMessageBody() {
-        return messageBody;
+        return httpMessage.getMessageBody();
     }
 
 }
