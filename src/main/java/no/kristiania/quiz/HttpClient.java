@@ -9,7 +9,7 @@ import java.util.TreeMap;
 public class HttpClient {
 
     private final int statusCode;
-    private final Map<String,String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private final Map<String, String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
         Socket socket = new Socket(host, port);
@@ -34,7 +34,7 @@ public class HttpClient {
         while ((c = in.read()) != -1 && c != '\r') {
             result.append((char) c);
         }
-    return result.toString();
+        return result.toString();
     }
 
     private void readHeaders(Socket socket) throws IOException {
@@ -52,5 +52,9 @@ public class HttpClient {
     public String getHeader(String headerName) {
 
         return header.get(headerName);
+    }
+
+    public String getMessageBody() {
+        return null;
     }
 }
