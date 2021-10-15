@@ -3,10 +3,13 @@ package no.kristiania.quiz;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class HttpClient {
 
     private final int statusCode;
+    private final Map<String,String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
         Socket socket = new Socket(host, port);
@@ -37,4 +40,8 @@ public class HttpClient {
         return statusCode;
     }
 
+    public String getHeader(String headerName) {
+
+        return header.get(headerName);
+    }
 }
