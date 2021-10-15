@@ -10,6 +10,7 @@ public class HttpClient {
 
     private final int statusCode;
     private final Map<String, String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private String messageBody;
 
     public HttpClient(String host, int port, String requestTarget) throws IOException {
         Socket socket = new Socket(host, port);
@@ -24,6 +25,17 @@ public class HttpClient {
         String[] statusLine = readLine(socket).split(" ");
         this.statusCode = Integer.parseInt(statusLine[1]);
         readHeaders(socket);
+
+        this.messageBody =readBytes(socket,getContentLength());
+        System.out.println(messageBody);
+    }
+
+    private String readBytes(Socket socket, int contentLength) throws IOException {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < contentLength; i++) {
+            result.append((char)socket.getInputStream().read());
+        }
+        return result.toString();
     }
 
     private String readLine(Socket socket) throws IOException {
@@ -59,7 +71,7 @@ public class HttpClient {
     }
 
     public String getMessageBody() {
-        return null;
+        return messageBody;
     }
 
 }
