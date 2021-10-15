@@ -11,16 +11,25 @@ public class HttpServer {
     public HttpServer(int port) throws IOException {
 
         serverSocket = new ServerSocket(port);
-        new Thread(this::handleConnections).start();
-        System.out.println("New thread, running Connections");
-    }
+        Socket clientSocket = serverSocket.accept();
 
-    private void handleConnections() {
-        try {
-            Socket clientSocket = serverSocket.accept();
-        } catch (IOException e) {
-            e.printStackTrace();
+        String httpRequest = HttpMessage.readLine(clientSocket);
+
+        System.out.println(httpRequest);
+
+        String headerLine;
+        while (!(headerLine = HttpMessage.readLine(clientSocket)).isBlank()) {
+            System.out.println(headerLine);
         }
+
+        String httpMessage = "Hello World";
+
+        String httpResponse = "HTTP/1.1 200 OK\r\n" +
+                "Content-Length: " + httpMessage.length() + "\r\n" +
+                "Connection: close\r\n" +
+                "\r\n" +
+                httpMessage;
+        clientSocket.getOutputStream().write(httpResponse.getBytes());
     }
 
 }

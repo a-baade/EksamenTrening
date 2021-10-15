@@ -24,12 +24,13 @@ tester og være fri for grunnleggende sikkerhetssvakheter. Programmet skal demon
 
 # Plan
 * **Http client**
-* [ ] Browser communicates with server(Sockets,HttpRequest)
-* [ ] HttpClient should read status code
-* [ ] HttpClient should read header fields
-* [ ] HttpClient should read content length
-* [ ] HttpClient should read message body
+* [x] Browser communicates with server(Sockets,HttpRequest)
+* [x] HttpClient should read status code
+* [x] HttpClient should read header fields
+* [x] HttpClient should read content length
+* [x] HttpClient should read message body
 * **Http server** 
+* [ ] Initial server connection 
 * [ ] HttpServer should respond with 404
 * [ ] HttpServer should include request target in 404
 * [ ] Content-type
