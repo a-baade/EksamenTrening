@@ -13,6 +13,36 @@ public class HttpServer {
     public HttpServer(int port) throws IOException {
 
         serverSocket = new ServerSocket(port);
+        /*
+*/
+        new Thread(this::handleConnections).start();
+    }
+
+    private void handleConnections() {
+        try
+        {
+            Socket clientSocket = serverSocket.accept();
+
+            String[] requestLine = HttpMessage.readLine(clientSocket).split(" ");
+            String requestTarget = requestLine[1];
+            String responseText = "File not found: " + requestTarget;
+
+            String response404 = "HTTP/1.1 404 Not found\r\n" +
+                    "Content-Length: " + responseText.getBytes().length+"\r\n\r\n"
+                    + responseText;
+
+            clientSocket.getOutputStream().write(response404.getBytes());
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getPort() {
+        return serverSocket.getLocalPort();
+    }
+
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(1986);
         Socket clientSocket = serverSocket.accept();
 
         String httpRequest = HttpMessage.readLine(clientSocket);
@@ -33,21 +63,5 @@ public class HttpServer {
                 "\r\n" +
                 httpMessage;
         clientSocket.getOutputStream().write(httpResponse.getBytes());
-
-        new Thread(this::handleConnections).start();
-    }
-
-    private void handleConnections() {
-        try (Socket clientSocket = serverSocket.accept())
-        {
-            String response404 = "HTTP/1.1 404 NotFound\r\nContent-Length: 0\r\n\r\n";
-            clientSocket.getOutputStream().write(response404.getBytes());
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public int getPort() {
-        return serverSocket.getLocalPort();
     }
 }
