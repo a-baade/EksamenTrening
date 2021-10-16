@@ -27,6 +27,8 @@ public class HttpMessage {
         while ((c = in.read()) != '\r') {
             result.append((char) c);
         }
+        int expectedNewline = socket.getInputStream().read();
+        assert expectedNewline == '\n';
         return result.toString();
     }
 

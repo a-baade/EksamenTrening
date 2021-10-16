@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 
-
 public class HttpServer {
 
     private final ServerSocket serverSocket;
@@ -14,25 +13,34 @@ public class HttpServer {
 
         serverSocket = new ServerSocket(port);
         /*
-*/
+         */
         new Thread(this::handleConnections).start();
     }
 
     private void handleConnections() {
-        try
-        {
+        try {
             Socket clientSocket = serverSocket.accept();
 
             String[] requestLine = HttpMessage.readLine(clientSocket).split(" ");
             String requestTarget = requestLine[1];
+
+            if (requestTarget.equals("/hello")) {
+                String responseBody = "<p>Hello World</p>";
+                String responseText = "HTTP/1.1 200 OK\r\n" +
+                        "Content-Length: " + responseBody.getBytes().length + "\r\n" +
+                        "Content-Type: text/html\r\n" +
+                        "\r\n"
+                        + responseBody;
+                clientSocket.getOutputStream().write(responseText.getBytes());
+                return;
+            }
+
             String responseText = "File not found: " + requestTarget;
-
             String response404 = "HTTP/1.1 404 Not found\r\n" +
-                    "Content-Length: " + responseText.getBytes().length+"\r\n\r\n"
+                    "Content-Length: " + responseText.getBytes().length + "\r\n\r\n"
                     + responseText;
-
             clientSocket.getOutputStream().write(response404.getBytes());
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
