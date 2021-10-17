@@ -3,17 +3,18 @@ package no.kristiania.quiz;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class HttpServer {
 
     private final ServerSocket serverSocket;
+    private Path directory;
 
     public HttpServer(int port) throws IOException {
 
         serverSocket = new ServerSocket(port);
-        /*
-         */
         new Thread(this::handleConnections).start();
     }
 
@@ -32,21 +33,31 @@ public class HttpServer {
                         "\r\n"
                         + responseBody;
                 clientSocket.getOutputStream().write(responseText.getBytes());
-                return;
+
+            }
+            else {
+                if (directory != null && Files.exists(directory.resolve(requestTarget.substring(1)))) {
+                    String responseBody = Files.readString(directory.resolve(requestTarget.substring(1)));
+
+                    String responseText = "HTTP/1.1 200 OK\r\n" +
+                            "Content-Length: " + responseBody.getBytes().length + "\r\n" +
+                            "Content-Type: text/html\r\n" +
+                            "\r\n"
+                            + responseBody;
+                    clientSocket.getOutputStream().write(responseText.getBytes());
+                }
+
+
+                String responseText = "File not found: " + requestTarget;
+                String response404 = "HTTP/1.1 404 Not found\r\n" +
+                        "Content-Length: " + responseText.getBytes().length + "\r\n\r\n"
+                        + responseText;
+                clientSocket.getOutputStream().write(response404.getBytes());
             }
 
-            String responseText = "File not found: " + requestTarget;
-            String response404 = "HTTP/1.1 404 Not found\r\n" +
-                    "Content-Length: " + responseText.getBytes().length + "\r\n\r\n"
-                    + responseText;
-            clientSocket.getOutputStream().write(response404.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public int getPort() {
-        return serverSocket.getLocalPort();
     }
 
     public static void main(String[] args) throws IOException {
@@ -71,5 +82,13 @@ public class HttpServer {
                 "\r\n" +
                 httpMessage;
         clientSocket.getOutputStream().write(httpResponse.getBytes());
+    }
+
+    public int getPort() {
+        return serverSocket.getLocalPort();
+    }
+
+    public void setRootDirectory(Path directory) {
+        this.directory = directory;
     }
 }

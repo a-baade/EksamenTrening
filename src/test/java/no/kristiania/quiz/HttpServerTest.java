@@ -3,6 +3,10 @@ package no.kristiania.quiz;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +25,12 @@ public class HttpServerTest {
     }
 
     @Test
+    public void shouldRespondWithRequestTargetIn404() throws IOException {
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/non-existing");
+        assertEquals("File not found: /non-existing", client.getMessageBody());
+    }
+
+    @Test
     void shouldReturn200forKnownRequest() throws IOException {
         HttpClient client = new HttpClient("localhost", server.getPort(), "/hello");
         assertAll(
@@ -31,10 +41,11 @@ public class HttpServerTest {
     }
 
     @Test
-    void shouldHandleMoreThanOneRequest() throws IOException {
-        assertEquals(200, new HttpClient("localhost", server.getPort(), "/hello")
-                .getStatusCode());
-        assertEquals(200, new HttpClient("localhost", server.getPort(), "/hello")
-                .getStatusCode());
+    public void shouldServeFiles() throws IOException {
+        server.setRootDirectory(Paths.get("target/test-classes"));
+        String fileContent = "New file created with the timestamp: " + LocalTime.now();
+        Files.write(Paths.get("target/test-classes/test-file.txt"),fileContent.getBytes(StandardCharsets.UTF_8));
+        HttpClient client = new HttpClient("localhost",server.getPort(),"/test-file.txt");
+        assertEquals(fileContent,client.getMessageBody());
     }
 }
