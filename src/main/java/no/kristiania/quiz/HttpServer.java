@@ -38,15 +38,15 @@ public class HttpServer {
         String fileTarget;
         String query = null;
         if (questionPos != -1) {
-            fileTarget = requestTarget.substring(0,questionPos);
+            fileTarget = requestTarget.substring(0, questionPos);
             query = requestTarget.substring(questionPos + 1);
-        }else {
+        } else {
             fileTarget = requestTarget;
         }
 
         if (fileTarget.equals("/hello")) {
             String yourName = "World";
-            if(query !=  null) {
+            if (query != null) {
                 yourName = query.split("=")[1];
             }
             String responseBody = "<p>Hello " + yourName + "</p>";
@@ -66,6 +66,7 @@ public class HttpServer {
         String responseText = statusCode +
                 "Content-Length: " + responseBody.getBytes().length + "\r\n" +
                 "Content-Type: text/html\r\n" +
+                "Connection: close\r\n" +
                 "\r\n"
                 + responseBody;
         clientSocket.getOutputStream().write(responseText.getBytes());

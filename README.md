@@ -35,7 +35,7 @@ tester og være fri for grunnleggende sikkerhetssvakheter. Programmet skal demon
 * [x] HttpServer should include request target in 404
 * [x] Content-type
 * [x] Return HTML-file from disk
-* [ ] Handle more than one request
+* [x] Handle more than one request
 * [ ] Process more than one file
 * [ ] HttpServer should handle more than one request
 

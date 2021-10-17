@@ -66,9 +66,9 @@ public class HttpServerTest {
 
     @Test
     void shouldHandleMoreThanOneRequest() throws IOException {
-        assertEquals(200, new HttpClient("localhost",server.getPort(),"/hello")
+        assertEquals(200, new HttpClient("localhost", server.getPort(), "/hello")
                 .getStatusCode());
-        assertEquals(200, new HttpClient("localhost",server.getPort(),"/hello")
+        assertEquals(200, new HttpClient("localhost", server.getPort(), "/hello")
                 .getStatusCode());
     }
 }

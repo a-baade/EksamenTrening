@@ -14,8 +14,8 @@ public class HttpMessage {
     public HttpMessage(Socket socket) throws IOException {
         startLine = HttpMessage.readLine(socket);
         readHeaders(socket);
-        if(header.containsKey("Content-Length")) {
-            messageBody = readBytes(socket,getContentLength());
+        if (header.containsKey("Content-Length")) {
+            messageBody = readBytes(socket, getContentLength());
         }
     }
 
@@ -35,7 +35,7 @@ public class HttpMessage {
     String readBytes(Socket socket, int contentLength) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < contentLength; i++) {
-            result.append((char)socket.getInputStream().read());
+            result.append((char) socket.getInputStream().read());
         }
         return result.toString();
     }
