@@ -41,11 +41,26 @@ public class HttpServerTest {
     }
 
     @Test
-    public void shouldServeFiles() throws IOException {
+    void shouldServeFiles() throws IOException {
         server.setRootDirectory(Paths.get("target/test-classes"));
         String fileContent = "New file created with the timestamp: " + LocalTime.now();
-        Files.write(Paths.get("target/test-classes/test-file.txt"),fileContent.getBytes(StandardCharsets.UTF_8));
-        HttpClient client = new HttpClient("localhost",server.getPort(),"/test-file.txt");
-        assertEquals(fileContent,client.getMessageBody());
+        Files.write(Paths.get("target/test-classes/test-file.txt"), fileContent.getBytes(StandardCharsets.UTF_8));
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/test-file.txt");
+        assertEquals(fileContent, client.getMessageBody());
+    }
+
+    @Test
+    void shouldUseFileExtensionForHtmlFile() throws IOException {
+        server.setRootDirectory(Paths.get("target/test-classes"));
+        String fileContent = "<p>Hello</p>";
+        Files.write(Paths.get("target/test-classes/test-file.html"), fileContent.getBytes(StandardCharsets.UTF_8));
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/test-file.html");
+        assertEquals(fileContent, client.getMessageBody());
+    }
+
+    @Test
+    void shouldEchoQueryParameter() throws IOException {
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/hello?yourName=andreas");
+        assertEquals("<p>Hello andreas</p>", client.getMessageBody());
     }
 }
