@@ -30,11 +30,12 @@ tester og være fri for grunnleggende sikkerhetssvakheter. Programmet skal demon
 * [x] HttpClient should read content length
 * [x] HttpClient should read message body
 * **Http server** 
-* [ ] Initial server connection 
-* [ ] HttpServer should respond with 404
-* [ ] HttpServer should include request target in 404
-* [ ] Content-type
-* [ ] Return HTML-file from disk
+* [x] Initial server connection 
+* [x] HttpServer should respond with 404
+* [x] HttpServer should include request target in 404
+* [x] Content-type
+* [x] Return HTML-file from disk
+* [ ] Handle more than one request
 * [ ] Process more than one file
 * [ ] HttpServer should handle more than one request
 

@@ -20,84 +20,55 @@ public class HttpServer {
 
     private void handleConnections() {
         try {
-            Socket clientSocket = serverSocket.accept();
-
-            String[] requestLine = HttpMessage.readLine(clientSocket).split(" ");
-            String requestTarget = requestLine[1];
-
-            int questionPos = requestTarget.indexOf('?');
-            String fileTarget;
-            String query = null;
-            if (questionPos != -1) {
-                fileTarget = requestTarget.substring(0,questionPos);
-                query = requestTarget.substring(questionPos + 1);
-            }else {
-                fileTarget = requestTarget;
+            while (true) {
+                handleConnection();
             }
-
-            if (fileTarget.equals("/hello")) {
-                String yourName = "World";
-                if(query !=  null) {
-                    yourName = query.split("=")[1];
-                }
-
-                String responseBody = "<p>Hello " + yourName + "</p>";
-
-                String responseText = "HTTP/1.1 200 OK\r\n" +
-                        "Content-Length: " + responseBody.getBytes().length + "\r\n" +
-                        "Content-Type: text/html\r\n" +
-                        "\r\n"
-                        + responseBody;
-                clientSocket.getOutputStream().write(responseText.getBytes());
-
-            } else {
-                if (directory != null && Files.exists(directory.resolve(fileTarget.substring(1)))) {
-                    String responseBody = Files.readString(directory.resolve(fileTarget.substring(1)));
-
-                    String responseText = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Length: " + responseBody.getBytes().length + "\r\n" +
-                            "Content-Type: text/html\r\n" +
-                            "\r\n"
-                            + responseBody;
-                    clientSocket.getOutputStream().write(responseText.getBytes());
-                }
-
-                String responseText = "File not found: " + requestTarget;
-                String response404 = "HTTP/1.1 404 Not found\r\n" +
-                        "Content-Length: " + responseText.getBytes().length + "\r\n" +
-                        "Content-Type: text/html\r\n" +
-                        "\r\n"
-                        + responseText;
-                clientSocket.getOutputStream().write(response404.getBytes());
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(1986);
+    private void handleConnection() throws IOException {
         Socket clientSocket = serverSocket.accept();
 
-        String httpRequest = HttpMessage.readLine(clientSocket);
+        String[] requestLine = HttpMessage.readLine(clientSocket).split(" ");
+        String requestTarget = requestLine[1];
 
-        System.out.println(httpRequest);
-
-        String headerLine;
-        while (!(headerLine = HttpMessage.readLine(clientSocket)).isBlank()) {
-            System.out.println(headerLine);
+        int questionPos = requestTarget.indexOf('?');
+        String fileTarget;
+        String query = null;
+        if (questionPos != -1) {
+            fileTarget = requestTarget.substring(0,questionPos);
+            query = requestTarget.substring(questionPos + 1);
+        }else {
+            fileTarget = requestTarget;
         }
 
-        String httpMessage = "Hello World || Hållo Wørld";
+        if (fileTarget.equals("/hello")) {
+            String yourName = "World";
+            if(query !=  null) {
+                yourName = query.split("=")[1];
+            }
+            String responseBody = "<p>Hello " + yourName + "</p>";
+            writeHttpResponse(clientSocket, responseBody, "HTTP/1.1 200 OK\r\n");
+        } else {
+            if (directory != null && Files.exists(directory.resolve(fileTarget.substring(1)))) {
+                String responseBody = Files.readString(directory.resolve(fileTarget.substring(1)));
 
-        String httpResponse = "HTTP/1.1 200 OK\r\n" +
-                "Content-Length: " + httpMessage.getBytes().length + "\r\n" +
-                "Connection: close\r\n" +
-                "Content-Type: text/html; charset=utf-8\r\n" +
-                "\r\n" +
-                httpMessage;
-        clientSocket.getOutputStream().write(httpResponse.getBytes());
+                writeHttpResponse(clientSocket, responseBody, "HTTP/1.1 200 OK\r\n");
+            }
+            String responseText = "File not found: " + requestTarget;
+            writeHttpResponse(clientSocket, responseText, "HTTP/1.1 404 Not found\r\n");
+        }
+    }
+
+    private void writeHttpResponse(Socket clientSocket, String responseBody, String statusCode) throws IOException {
+        String responseText = statusCode +
+                "Content-Length: " + responseBody.getBytes().length + "\r\n" +
+                "Content-Type: text/html\r\n" +
+                "\r\n"
+                + responseBody;
+        clientSocket.getOutputStream().write(responseText.getBytes());
     }
 
     public int getPort() {
