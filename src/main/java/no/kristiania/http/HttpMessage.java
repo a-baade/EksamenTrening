@@ -1,4 +1,4 @@
-package no.kristiania.quiz;
+package no.kristiania.http;
 
 import java.io.IOException;
 import java.io.InputStream;
