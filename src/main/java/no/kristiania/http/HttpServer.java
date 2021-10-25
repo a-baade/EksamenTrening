@@ -37,7 +37,6 @@ public class HttpServer {
     private void handleConnection() throws IOException {
         Socket clientSocket = serverSocket.accept();
 
-        HttpMessage httpMessage = new HttpMessage(clientSocket);
         String[] requestLine = HttpMessage.readLine(clientSocket).split(" ");
         String requestTarget = requestLine[1];
 
@@ -53,7 +52,6 @@ public class HttpServer {
         if (fileTarget.equals("/hello")) {
             String queryOutput = "World";
             if (query != null) {
-                Map<String, String> queryMap = parseRequestParameters(query);
                 queryOutput = query.split("=")[1];
             }
             String responseText = "<p>Hello " + queryOutput + "</p>";

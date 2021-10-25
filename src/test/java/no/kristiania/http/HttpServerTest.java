@@ -73,7 +73,7 @@ public class HttpServerTest {
                 .getStatusCode());
     }
 
-    @Test
+    /*@Test
     void shouldReturnQuestionsFromServer() throws IOException {
         server.setQuestionOptions(List.of("Question 1", "Question 2"));
 
@@ -81,5 +81,5 @@ public class HttpServerTest {
         assertEquals(
                 "<option value=1>Question 1</option><option value=2>Question 2</option>",
                 client.getMessageBody());
-    }
+    }*/
 }
