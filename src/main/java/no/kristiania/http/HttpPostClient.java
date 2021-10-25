@@ -14,7 +14,6 @@ public class HttpPostClient {
         String request = "POST " + requestTarget + " HTTP/1.1\r\n" +
                 "Host: " + host + "\r\n" +
                 "Content-Length: " + contentBody.length() + "\r\n" +
-                "\r\n" +
                 "Connection: close\r\n" +
                 "\r\n" +
                 contentBody;

@@ -73,13 +73,26 @@ public class HttpServerTest {
                 .getStatusCode());
     }
 
-    /*@Test
+    @Test
     void shouldReturnQuestionsFromServer() throws IOException {
         server.setQuestionOptions(List.of("Question 1", "Question 2"));
 
-        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questionOptions");
         assertEquals(
                 "<option value=1>Question 1</option><option value=2>Question 2</option>",
                 client.getMessageBody());
-    }*/
+    }
+
+    @Test
+    void shouldCreateNewQuestion() throws IOException {
+        HttpPostClient postClient = new HttpPostClient(
+                "localhost",
+                server.getPort(),
+                "/api/newQuestion",
+                "title=foo&text=nar"
+        );
+        assertEquals(200, postClient.getStatusCode());
+        Question questions = server.getQuestions().get(0);
+        assertEquals("4+4: ", questions.getQuestions());
+    }
 }

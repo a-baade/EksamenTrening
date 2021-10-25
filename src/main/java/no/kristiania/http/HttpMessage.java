@@ -9,8 +9,8 @@ import java.util.TreeMap;
 public class HttpMessage {
 
     private final Map<String, String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    private String messageBody;
-    public String startLine;
+    public String messageBody;
+    public static String startLine;
 
     public HttpMessage(Socket socket) throws IOException {
         startLine = HttpMessage.readLine(socket);
