@@ -7,13 +7,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 
 public class HttpServer {
 
     private final ServerSocket serverSocket;
     private Path rootDirectory;
-    private List<String> questions = new ArrayList<>();
+    private List<String> questionOptions = new ArrayList<>();
+    private List<Questions> questions;
 
     public HttpServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
@@ -55,12 +57,12 @@ public class HttpServer {
             String responseText = "<p>Hello " + queryOutput + "</p>";
 
             writeHttpResponse(clientSocket, responseText, "text/html", "HTTP/1.1 200 OK\r\n");
-        } else if (fileTarget.equals("/api/questions")) {
+        } else if (fileTarget.equals("/api/questionOptions")) {
             String responseText = "";
 
             int value = 1;
-            for (String questions : questions) {
-                responseText += "<option value=" + (value++) + ">" + questions + "</option>";
+            for (String questionOptions : questionOptions) {
+                responseText += "<option value=" + (value++) + ">" + questionOptions + "</option>";
             }
 
             writeHttpResponse(clientSocket, responseText, "text/html", "HTTP/1.1 200 OK\r\n");
@@ -101,9 +103,12 @@ public class HttpServer {
         this.rootDirectory = rootDirectory;
     }
 
-    public void setQuestions(List<String> questions) {
-        this.questions = questions;
+    public void setQuestionOptions(List<String> questionOptions) {
+        this.questionOptions = questionOptions;
     }
 
+    public List<Questions> getQuestions() {
+        return questions;
+    }
 
 }
