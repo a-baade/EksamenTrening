@@ -77,9 +77,9 @@ public class HttpServerTest {
     void shouldReturnQuestionsFromServer() throws IOException {
         server.setQuestions(List.of("Question 1", "Question 2"));
 
-        HttpClient client = new HttpClient("localhost", server.getPort(),"/api/questions");
+        HttpClient client = new HttpClient("localhost", server.getPort(), "/api/questions");
         assertEquals(
-        "<option value=1>Question 1</option><option value=2>Question 2</option>",
+                "<option value=1>Question 1</option><option value=2>Question 2</option>",
                 client.getMessageBody());
     }
 }

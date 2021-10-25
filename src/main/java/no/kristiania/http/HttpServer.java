@@ -54,7 +54,7 @@ public class HttpServer {
             }
             String responseText = "<p>Hello " + queryOutput + "</p>";
 
-            writeHttpResponse(clientSocket, responseText,"text/html","HTTP/1.1 200 OK\r\n");
+            writeHttpResponse(clientSocket, responseText, "text/html", "HTTP/1.1 200 OK\r\n");
         } else if (fileTarget.equals("/api/questions")) {
             String responseText = "";
 
@@ -63,7 +63,7 @@ public class HttpServer {
                 responseText += "<option value=" + (value++) + ">" + questions + "</option>";
             }
 
-            String response = writeHttpResponse(clientSocket, responseText,"text/html", "HTTP/1.1 200 OK\r\n");
+            writeHttpResponse(clientSocket, responseText, "text/html", "HTTP/1.1 200 OK\r\n");
 
         } else {
             if (rootDirectory != null && Files.exists(rootDirectory.resolve(fileTarget.substring(1)))) {
@@ -73,16 +73,16 @@ public class HttpServer {
                 if (requestTarget.endsWith(".html")) {
                     contentType = "text/html";
                 }
-                String response = writeHttpResponse(clientSocket, responseText,"", "HTTP/1.1 200 OK\r\n");
+                writeHttpResponse(clientSocket, responseText, "", "HTTP/1.1 200 OK\r\n");
                 return;
             }
 
             String responseText = "File not found: " + requestTarget;
-            writeHttpResponse(clientSocket, responseText,"text/plain", "HTTP/1.1 404 Not found\r\n");
+            writeHttpResponse(clientSocket, responseText, "", "HTTP/1.1 404 Not found\r\n");
         }
     }
 
-    private String writeHttpResponse(Socket clientSocket, String responseBody, String contentType, String statusCode) throws IOException {
+    private void writeHttpResponse(Socket clientSocket, String responseBody, String contentType, String statusCode) throws IOException {
         String responseText = statusCode +
                 "Content-Length: " + responseBody.getBytes().length + "\r\n" +
                 "Content-Type: " + contentType + "\r\n" +
@@ -90,7 +90,6 @@ public class HttpServer {
                 "\r\n"
                 + responseBody;
         clientSocket.getOutputStream().write(responseText.getBytes());
-        return responseText;
     }
 
 
