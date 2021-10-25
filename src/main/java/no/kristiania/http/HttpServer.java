@@ -6,8 +6,9 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
+import java.util.Map;
 
 
 public class HttpServer {
@@ -15,7 +16,7 @@ public class HttpServer {
     private final ServerSocket serverSocket;
     private Path rootDirectory;
     private List<String> questionOptions = new ArrayList<>();
-    private List<Questions> questions;
+    private List<Questions> questions = new ArrayList<>();
 
     public HttpServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
@@ -36,6 +37,7 @@ public class HttpServer {
     private void handleConnection() throws IOException {
         Socket clientSocket = serverSocket.accept();
 
+        HttpMessage httpMessage = new HttpMessage(clientSocket);
         String[] requestLine = HttpMessage.readLine(clientSocket).split(" ");
         String requestTarget = requestLine[1];
 
@@ -48,15 +50,16 @@ public class HttpServer {
         } else {
             fileTarget = requestTarget;
         }
-
         if (fileTarget.equals("/hello")) {
             String queryOutput = "World";
             if (query != null) {
+                Map<String, String> queryMap = parseRequestParameters(query);
                 queryOutput = query.split("=")[1];
             }
             String responseText = "<p>Hello " + queryOutput + "</p>";
 
             writeHttpResponse(clientSocket, responseText, "text/html", "HTTP/1.1 200 OK\r\n");
+
         } else if (fileTarget.equals("/api/questionOptions")) {
             String responseText = "";
 
@@ -82,6 +85,17 @@ public class HttpServer {
             String responseText = "File not found: " + requestTarget;
             writeHttpResponse(clientSocket, responseText, "", "HTTP/1.1 404 Not found\r\n");
         }
+    }
+
+    private Map<String, String> parseRequestParameters(String query) {
+        Map<String, String> queryMap = new HashMap<>();
+        for (String queryParameter : query.split("&")) {
+            int equalsPos = queryParameter.indexOf('=');
+            String parameterName = queryParameter.substring(0, equalsPos);
+            String parameterValue = queryParameter.substring(equalsPos + 1);
+            queryMap.put(parameterName, parameterValue);
+        }
+        return queryMap;
     }
 
     private void writeHttpResponse(Socket clientSocket, String responseBody, String contentType, String statusCode) throws IOException {

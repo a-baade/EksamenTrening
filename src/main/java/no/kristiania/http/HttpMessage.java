@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class HttpMessage {
+
     private final Map<String, String> header = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private String messageBody;
     public String startLine;

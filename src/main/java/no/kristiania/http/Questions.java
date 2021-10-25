@@ -2,13 +2,13 @@ package no.kristiania.http;
 
 public class Questions {
 
-    private String question;
+    private String questions;
 
-    public String getQuestion() {
-        return question;
+    public String getQuestions(String question) {
+        return questions;
     }
 
-    public void setQuestion(String question) {
-        this.question = question;
+    public void setQuestions(String question) {
+        this.questions = questions;
     }
 }

@@ -82,18 +82,4 @@ public class HttpServerTest {
                 "<option value=1>Question 1</option><option value=2>Question 2</option>",
                 client.getMessageBody());
     }
-
-    @Test
-    void shouldCreateNewQuestion() throws IOException {
-        HttpPostClient postClient = new HttpPostClient(
-                "localhost",
-                server.getPort(),
-                "/api/questions",
-                "3+3="
-        );
-        assertEquals(200, postClient.getStatusCode());
-        Questions questions = server.getQuestions().get(0);
-        assertEquals("3+3= ",questions.getQuestion());
-
-    }
 }
