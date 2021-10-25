@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,5 +71,15 @@ public class HttpServerTest {
                 .getStatusCode());
         assertEquals(200, new HttpClient("localhost", server.getPort(), "/hello")
                 .getStatusCode());
+    }
+
+    @Test
+    void shouldReturnQuestionsFromServer() throws IOException {
+        server.setQuestions(List.of("Question 1", "Question 2"));
+
+        HttpClient client = new HttpClient("localhost", server.getPort(),"/api/questions");
+        assertEquals(
+        "<option value=1>Option 1</option><option value=2>Option 2</option>",
+                client.getMessageBody());
     }
 }

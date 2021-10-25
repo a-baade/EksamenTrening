@@ -5,16 +5,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HttpServer {
 
     private final ServerSocket serverSocket;
-    private Path directory;
+    private Path rootDirectory;
+    private List<String> questions = new ArrayList<>();
 
     public HttpServer(int port) throws IOException {
-
         serverSocket = new ServerSocket(port);
+
         new Thread(this::handleConnections).start();
     }
 
@@ -45,38 +48,67 @@ public class HttpServer {
         }
 
         if (fileTarget.equals("/hello")) {
-            String yourName = "World";
+            String queryOutput = "World";
             if (query != null) {
-                yourName = query.split("=")[1];
+                queryOutput = query.split("=")[1];
             }
-            String responseBody = "<p>Hello " + yourName + "</p>";
-            writeHttpResponse(clientSocket, responseBody, "HTTP/1.1 200 OK\r\n");
-        } else {
-            if (directory != null && Files.exists(directory.resolve(fileTarget.substring(1)))) {
-                String responseBody = Files.readString(directory.resolve(fileTarget.substring(1)));
+            String responseText = "<p>Hello " + queryOutput + "</p>";
 
-                writeHttpResponse(clientSocket, responseBody, "HTTP/1.1 200 OK\r\n");
+            writeHttpResponse(clientSocket, responseText,"text/html","HTTP/1.1 200 OK\r\n");
+        } else if (fileTarget.equals("/api/questions")) {
+            String responseText = "";
+
+            int value = 1;
+            for (String questions : questions)
+                responseText += "<option value=" + (value++) + ">" + questions + "</option>";
+
+
+        } else {
+            if (rootDirectory != null && Files.exists(rootDirectory.resolve(fileTarget.substring(1)))) {
+                String responseText = Files.readString(rootDirectory.resolve(fileTarget.substring(1)));
+
+                String contentType = "text/plain";
+                if (requestTarget.endsWith(".html")) {
+                    contentType = "text/html";
+                }
+                String response = "HTTP/1.1 200 OK\r\n" +
+                        "Content-Length: " + responseText.length() + "\r\n" +
+                        "Content-Type: " + contentType + "\r\n" +
+                        "Connection: close\r\n" +
+                        "\r\n" +
+                        responseText;
+                clientSocket.getOutputStream().write(response.getBytes());
+                return;
             }
+
             String responseText = "File not found: " + requestTarget;
-            writeHttpResponse(clientSocket, responseText, "HTTP/1.1 404 Not found\r\n");
+            writeHttpResponse(clientSocket, responseText,"text/plain", "HTTP/1.1 404 Not found\r\n");
         }
     }
 
-    private void writeHttpResponse(Socket clientSocket, String responseBody, String statusCode) throws IOException {
+    private String writeHttpResponse(Socket clientSocket, String responseBody, String contentType, String statusCode) throws IOException {
         String responseText = statusCode +
                 "Content-Length: " + responseBody.getBytes().length + "\r\n" +
-                "Content-Type: text/html\r\n" +
+                "Content-Type: " + contentType + "\r\n" +
                 "Connection: close\r\n" +
                 "\r\n"
                 + responseBody;
         clientSocket.getOutputStream().write(responseText.getBytes());
+        return responseText;
     }
+
 
     public int getPort() {
         return serverSocket.getLocalPort();
     }
 
-    public void setRootDirectory(Path directory) {
-        this.directory = directory;
+    public void setRootDirectory(Path rootDirectory) {
+        this.rootDirectory = rootDirectory;
     }
+
+    public void setQuestions(List<String> questions) {
+        this.questions = questions;
+    }
+
+
 }

@@ -30,7 +30,7 @@ public class HttpClientTest {
     void shouldReadMessageBody() throws IOException {
         HttpClient client = new HttpClient("httpbin.org", 80, "/html");
         assertTrue(
-                client.getMessageBody().startsWith("\n<!DOCTYPE html>"),
+                client.getMessageBody().startsWith("<!DOCTYPE html>"),
                 "this is html: " + client.getMessageBody());
     }
 }

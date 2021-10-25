@@ -32,7 +32,7 @@ public class HttpMessage {
         return result.toString();
     }
 
-    String readBytes(Socket socket, int contentLength) throws IOException {
+    static String readBytes(Socket socket, int contentLength) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < contentLength; i++) {
             result.append((char) socket.getInputStream().read());
