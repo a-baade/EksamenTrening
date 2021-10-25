@@ -59,9 +59,11 @@ public class HttpServer {
             String responseText = "";
 
             int value = 1;
-            for (String questions : questions)
+            for (String questions : questions) {
                 responseText += "<option value=" + (value++) + ">" + questions + "</option>";
+            }
 
+            String response = writeHttpResponse(clientSocket, responseText,"text/html", "HTTP/1.1 200 OK\r\n");
 
         } else {
             if (rootDirectory != null && Files.exists(rootDirectory.resolve(fileTarget.substring(1)))) {
@@ -71,13 +73,7 @@ public class HttpServer {
                 if (requestTarget.endsWith(".html")) {
                     contentType = "text/html";
                 }
-                String response = "HTTP/1.1 200 OK\r\n" +
-                        "Content-Length: " + responseText.length() + "\r\n" +
-                        "Content-Type: " + contentType + "\r\n" +
-                        "Connection: close\r\n" +
-                        "\r\n" +
-                        responseText;
-                clientSocket.getOutputStream().write(response.getBytes());
+                String response = writeHttpResponse(clientSocket, responseText,"", "HTTP/1.1 200 OK\r\n");
                 return;
             }
 

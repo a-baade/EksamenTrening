@@ -79,7 +79,7 @@ public class HttpServerTest {
 
         HttpClient client = new HttpClient("localhost", server.getPort(),"/api/questions");
         assertEquals(
-        "<option value=1>Option 1</option><option value=2>Option 2</option>",
+        "<option value=1>Question 1</option><option value=2>Question 2</option>",
                 client.getMessageBody());
     }
 }
